@@ -1,21 +1,23 @@
 import { vec2, vec3, lerp } from './vec.js';
 
 export function triArea(a, b, c) {
-    if(!(a instanceof vec2)
-        || !(b instanceof vec2)
-        || !(c instanceof vec2)) throw new Error('ERRO! Dimensões incompatíveis!\n');
+    if(a.h != 2 || a.h != b.h || b.h != c.h || a.w != 1 || a.w != b.w || b.w != c.w)
+        throw new Error('ERRO! Dimensões incompatíveis!\n');
 
-    return (c.x - a.x) * (b.y - a.y) / 2 - (b.x - a.x) * (c.y - a.y) / 2;
+    // x = [0][0]
+    // y = [1][0]
+    return (c.value[0][0] - a.value[0][0]) * (b.value[1][0] - a.value[1][0])
+        / 2 - (b.value[0][0] - a.value[0][0]) * (c.value[1][0] - a.value[1][0]) / 2;
 }
 
 export function barycentricCoords(p, P) {
     const aT = triArea(P[0], P[1], P[2]);
 
-    return new vec3(
+    return new vec3([
         triArea(p, P[1], P[2]) / aT,
         triArea(P[0], p, P[2]) / aT,
         triArea(P[0], P[1], p) / aT,
-    );
+    ]);
 }
 
 // M: bezier cubico: M = 3
@@ -59,4 +61,26 @@ export function sampleBezierSpline(M, P, n) {
     }
 
     return C;
+}
+
+export function translation(P, v) {
+    let Q = [...P];
+
+    for(let i = 0; i < P.length; i++)
+    {
+        Q[i] = P[i].add(v);
+    }
+
+    return Q;
+}
+
+export function linearTransf(P, M) {
+    let Q = [...P];
+
+    for(let i = 0; i < P.length; i++)
+    {
+        Q[i] = M.mult(P[i]);
+    }
+
+    return Q;
 }
