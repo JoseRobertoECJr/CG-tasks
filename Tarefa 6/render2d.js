@@ -1,7 +1,25 @@
-function ImageRGB() {
+export function ImageRGB() {
+
+    const vertexShaderSource = `
+        attribute vec2 aPosition;
+        uniform vec2 uResolution;
+        void main() {
+            // Converte as coordenadas do canvas para o clip space
+            vec2 clipSpace = (aPosition / uResolution) * 2.0 - 1.0;
+            gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+        }
+    `;
+
+    const fragmentShaderSource = `
+        precision mediump float;
+        uniform vec4 uColor;
+        void main() {
+            gl_FragColor = uColor;
+        }
+    `;
 
     // Compila shader
-    compileShader = (gl, type, source) => {
+    const compileShader = (gl, type, source) => {
         const shader = gl.createShader(type);
         gl.shaderSource(shader, source);
         gl.compileShader(shader);
@@ -16,7 +34,7 @@ function ImageRGB() {
     }
 
     // Cria programa
-    createProgram = (gl, vertexShader, fragmentShader) => {
+    const createProgram = (gl, vertexShader, fragmentShader) => {
         const program = gl.createProgram();
         gl.attachShader(program, vertexShader);
         gl.attachShader(program, fragmentShader);
@@ -115,6 +133,18 @@ function ImageRGB() {
             // Desenha os quadrados desenhando os 2 triangulos com a cor definida
             gl.drawArrays(gl.TRIANGLES, i * 6, 6);
         }
+    }
+
+    this.drawSquares = () => {
+
+    }
+
+    this.drawTriangles = () => {
+        
+    }
+
+    this.drawLineStrip = () => {
+
     }
 
     this.fill = (...params) => {

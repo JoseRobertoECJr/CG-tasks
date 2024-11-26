@@ -1,11 +1,14 @@
-// Funcao principal
-function main() {
+import { ImageRGB } from '../render2d.js';
+
+export function main() {
 
     // Cria o canvas
-    let G = ImageRGB();
+    let G = new ImageRGB();
+
+    console.log(G);
 
     // Define a cor de fundo e limpa a tela
-    fill(0, 0, 0, 1.0);
+    G.fill(0, 0, 0, 1.0);
     
-    render2d();
+    G.render2d();
 }
