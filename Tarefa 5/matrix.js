@@ -70,6 +70,19 @@ export function Mat(h, w, arrOfArr) {
             return new Mat(this.h, this.w, newMatrix);
         }
 
+        // multiplicacao por array de vetores: retorna array de vetores
+        if(otherMatrix.length)
+        {
+            let Q = [...otherMatrix];
+
+            for(let i = 0; i < otherMatrix.length; i++)
+            {
+                Q[i] = this.mult(otherMatrix[i]);
+            }
+
+            return Q;
+        }
+
         // multiplicacao de matrizes
         let responseMatrix = [];
 

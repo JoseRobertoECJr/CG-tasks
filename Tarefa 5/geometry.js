@@ -74,13 +74,9 @@ export function translation(P, v) {
     return Q;
 }
 
-export function linearTransf(P, M) {
-    let Q = [...P];
+export function get2DPosition(v3) {
 
-    for(let i = 0; i < P.length; i++)
-    {
-        Q[i] = M.mult(P[i]);
-    }
-
-    return Q;
+    const v3ValueFlat = v.value.flat();
+    
+    return vec2([v3ValueFlat[0]/v3ValueFlat[2], v3ValueFlat[1]/v3ValueFlat[2]]);
 }

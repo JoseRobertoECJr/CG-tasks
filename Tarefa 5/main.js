@@ -1,5 +1,5 @@
 import { Vec, vec2, vec3, vec4, toMat } from './vec.js';
-import { sampleBezier, sampleBezierSpline, translation, linearTransf } from './geometry.js';
+import { sampleBezier, sampleBezierSpline, translation } from './geometry.js';
 import { Mat, mat2, mat3, mat4, mat2x2, mat2x3, mat2x4, mat3x2, mat3x3, mat3x4, mat4x2, mat4x3, mat4x4, transpose, inverse, toMatT } from './matrix.js';
 import { plot } from 'nodeplotlib';
 
@@ -22,9 +22,9 @@ const CP = [
     new vec2([250, 275])
 ];
 
-function slide5() {
+const P = sampleBezierSpline(3, CP, 30);
 
-    const P = sampleBezierSpline(3, CP, 30);
+function slide5() {
 
     const v = new vec2([220, 50]);
 
@@ -246,14 +246,13 @@ function slide24() {
 // avancado do 26
 function slide27() {
 
-    const P = sampleBezierSpline(3, CP, 30);
-
+    // transformacao linear
     const M = new mat2([
         [2.2, 0],
         [0, 1.3]
     ]);
 
-    let Q = linearTransf(P, M);
+    let Q = M.mult(P);
 
     const data = [
         {
@@ -275,15 +274,13 @@ function slide27() {
 
 function slide29() {
 
-    const P = sampleBezierSpline(3, CP, 30);
-
     // cisalhamento
     const M = new mat2([
         [1, 1.8],
         [0, 1]
     ]);
 
-    let Q = linearTransf(P, M);
+    let Q = M.mult(P);
 
     const data = [
         {
@@ -305,15 +302,149 @@ function slide29() {
 
 function slide31() {
 
-    const P = sampleBezierSpline(3, CP, 30);
-
-    // espelhamento vertical
+    // espelhamento horizontal
     const M = new mat2([
         [-1, 0],
         [0, 1]
     ]);
 
-    let Q = linearTransf(P, M);
+    const v = vec2([800, 0]);
+
+    let Q = M.mult(P);
+
+    Q = translation(Q, v);
+
+    const data = [
+        {
+            x: P.map(p => p.value[0][0]),
+            y: P.map(p => p.value[1][0]),
+            type: 'scatter',
+            line: { color: '#ff5656' }
+        },
+        {
+            x: Q.map(p => p.value[0][0]),
+            y: Q.map(p => p.value[1][0]),
+            type: 'scatter',
+            line: { color: '#3b3bff' }
+        }
+    ];
+
+    plot(data);
+}
+
+function slide32() {
+
+    // espelhamento vertical
+    const M = new mat2([
+        [1, 0],
+        [0, -1]
+    ]);
+
+    const v = vec2([0, 800]);
+
+    let Q = M.mult(P);
+
+    Q = translation(Q, v);
+
+    const data = [
+        {
+            x: P.map(p => p.value[0][0]),
+            y: P.map(p => p.value[1][0]),
+            type: 'scatter',
+            line: { color: '#ff5656' }
+        },
+        {
+            x: Q.map(p => p.value[0][0]),
+            y: Q.map(p => p.value[1][0]),
+            type: 'scatter',
+            line: { color: '#3b3bff' }
+        }
+    ];
+
+    plot(data);
+}
+
+function slide34() {
+
+    const t = 0.4;
+
+    // rotação
+    const M = new mat2([
+        [Math.cos(t), -Math.sin(t)],
+        [Math.sin(t), Math.cos(t)]
+    ]);
+
+    let Q = M.mult(P);
+
+    const data = [
+        {
+            x: P.map(p => p.value[0][0]),
+            y: P.map(p => p.value[1][0]),
+            type: 'scatter',
+            line: { color: '#ff5656' }
+        },
+        {
+            x: Q.map(p => p.value[0][0]),
+            y: Q.map(p => p.value[1][0]),
+            type: 'scatter',
+            line: { color: '#3b3bff' }
+        }
+    ];
+
+    plot(data);
+}
+
+function slide35() {
+
+    const t = 0.5;
+
+    // rotação
+    const Rot = new mat2([
+        [Math.cos(t), -Math.sin(t)],
+        [Math.sin(t), Math.cos(t)]
+    ]);
+
+    const Cis = new mat2([
+        [1, 1.2],
+        [0, 1]
+    ]);
+
+    let Q = Cis.mult(Rot).mult(P);
+
+    const data = [
+        {
+            x: P.map(p => p.value[0][0]),
+            y: P.map(p => p.value[1][0]),
+            type: 'scatter',
+            line: { color: '#ff5656' }
+        },
+        {
+            x: Q.map(p => p.value[0][0]),
+            y: Q.map(p => p.value[1][0]),
+            type: 'scatter',
+            line: { color: '#3b3bff' }
+        }
+    ];
+
+    plot(data);
+}
+
+function slide35() {
+
+    const t = 0.5;
+
+    // rotação
+    const Rot = new mat2([
+        [Math.cos(t), -Math.sin(t)],
+        [Math.sin(t), Math.cos(t)]
+    ]);
+
+    const Cis = new mat2([
+        [1, 1.2],
+        [0, 1]
+    ]);
+
+    let Q = Cis.mult(Rot).mult(P);
 
     const data = [
         {
@@ -350,4 +481,8 @@ slide5();
 // console.log('Slide 23:\n'); slide23();
 // console.log('Slide 24:\n'); slide24();
 slide27();
+slide29();
 slide31();
+slide32();
+slide34();
+slide35();
