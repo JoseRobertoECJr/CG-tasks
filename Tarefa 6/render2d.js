@@ -86,34 +86,40 @@ export function imageRGB() {
 
     gl.useProgram(program);
 
-    this.render2d = (P, primitiveType) => {
-
-        let positions = P.map(p => [(p.point.value[0]*2/canvas.width)-1, (p.point.value[1]*2/canvas.height)-1]).flat();
-        let colors = P.map(p => p.color).flat();
-
-        // Buffer de posições
-        const positionBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-
-        const positionLocation = gl.getAttribLocation(program, 'a_position');
-        gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(positionLocation);
-
-        // Buffer de cores
-        const colorBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-
-        const colorLocation = gl.getAttribLocation(program, 'a_color');
-        gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(colorLocation);
-
+    this.render2d = (params) => {
         // Limpar e desenhar a cena
         gl.clearColor(...this.clearColor, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
-        gl.drawArrays(primitiveType, 0, positions.length / 2);
+        for(const [P, primitiveType] of params) {
+
+            console.log(P)
+            console.log(primitiveType)
+
+            let positions = P.map(p => [(p.point.value[0]*2/canvas.width)-1, (p.point.value[1]*2/canvas.height)-1]).flat();
+            let colors = P.map(p => p.color).flat();
+
+            // Buffer de posições
+            const positionBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+            const positionLocation = gl.getAttribLocation(program, 'a_position');
+            gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(positionLocation);
+
+            // Buffer de cores
+            const colorBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+
+            const colorLocation = gl.getAttribLocation(program, 'a_color');
+            gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(colorLocation);
+
+
+            gl.drawArrays(primitiveType, 0, positions.length / 2);
+        }
     }
 
     this.fill = (color) => {
