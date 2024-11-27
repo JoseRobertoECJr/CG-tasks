@@ -2,28 +2,12 @@ import { imageRGB, vec2Col,
     points, lines, lineStrip, lineLoop, triangles, triangleStrip, triangleFan,
     red, green, blue, yellow, cyan, orange, white
 } from '../render2d.js';
-import { clipRectangle, clip } from '../clip2d.js';
+import { clipRectangle, clip, clipPolygon } from '../clip2d.js';
 import { line, toLines } from '../line.js';
 
 export function main() {
 
     const R = new clipRectangle(30, 40, 300, 200);
-
-    const P = [
-        new vec2Col([20, 20], red),
-        new vec2Col([80, 60], green),
-        new vec2Col([220, 30], blue),
-        new vec2Col([350, 90], yellow),
-        new vec2Col([70, 300], cyan),
-        new vec2Col([320, 150], orange),
-        new vec2Col([340, 200], orange)
-    ];
-
-    const pLiness = toLines(P);
-
-    const pLines = clip(pLiness, R)
-        .map(l => [[ l.p, l.q], lineStrip]);
-
     const RP = [
         new vec2Col([R.x0,R.y0], blue),
         new vec2Col([R.x0,R.y1], blue),
@@ -31,13 +15,24 @@ export function main() {
         new vec2Col([R.x1,R.y0], blue)
     ];
 
-    let G = new imageRGB();
+    const P = [
+        new vec2Col([ 60, 105], red),
+        new vec2Col([145, 270], blue),
+        new vec2Col([283, 333], cyan),
+        new vec2Col([471, 298], orange),
+        new vec2Col([364, 208], yellow),
+        new vec2Col([229, 114], green),
+    ];
 
+    const polygon = clipPolygon(P, R);
+
+    console.log(polygon.map(v => v.point.value.flat()))
+
+    let G = new imageRGB();
     G.fill(white);
-    
     G.render2d([
-        //[P, lineStrip],
+        //[P, triangleFan],
         [RP, lineLoop],
-        ...pLines
+        [polygon, triangleFan]
     ]);
 }

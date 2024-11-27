@@ -2,7 +2,7 @@ import { imageRGB, vec2Col,
     points, lines, lineStrip, lineLoop, triangles, triangleStrip, triangleFan,
     red, green, blue, yellow, cyan, orange, white
 } from '../render2d.js';
-import { clipRectangle, line, clip } from '../clip2d.js';
+import { clipRectangle } from '../clip2d.js';
 
 export function main() {
 
@@ -23,8 +23,6 @@ export function main() {
         new vec2Col([R.x1,R.y1], blue),
         new vec2Col([R.x1,R.y0], blue),
     ];
-
-    console.log(RP)
 
     let G = new imageRGB();
 

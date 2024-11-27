@@ -69,3 +69,46 @@ export function clip(lines, rect) {
 
     return newLines;
 }
+
+export function clipPol(vec2ColArr, semipl) {
+
+    let newVecs = [];
+    for(let i = 0; i < vec2ColArr.length; i++) {
+        const p = vec2ColArr[i];
+        const q = vec2ColArr[(i+1)%vec2ColArr.length];
+        
+        const hasP = semipl.has(p.point);
+        const hasQ = semipl.has(q.point);
+
+        console.log(p.point.value.flat(), q.point.value.flat(), hasP, hasQ)
+
+        if(hasP != hasQ) {
+            const t = semipl.intersect(p.point, q.point);
+            const r = p.point.mult(1-t).add(q.point.mult(t));
+
+            const rColor = [
+                p.color[0] * (1-t) + q.color[0] * t, // red
+                p.color[1] * (1-t) + q.color[1] * t, // blue
+                p.color[2] * (1-t) + q.color[2] * t, // green
+            ];
+
+            newVecs.push(new vec2Col(r.value.flat(), rColor));
+        }
+
+        if(hasQ) {
+            newVecs.push(q);
+        }
+    }
+
+    return newVecs;
+}
+
+export function clipPolygon(vec2ColArr, rect) {
+    let polygon = [...vec2ColArr];
+
+    for(let semipl of rect.sides()) {
+        polygon = clipPol(polygon, semipl);
+    }
+
+    return polygon;
+}
