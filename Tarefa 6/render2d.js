@@ -93,9 +93,6 @@ export function imageRGB() {
 
         for(const [P, primitiveType] of params) {
 
-            console.log(P)
-            console.log(primitiveType)
-
             let positions = P.map(p => [(p.point.value[0]*2/canvas.width)-1, (p.point.value[1]*2/canvas.height)-1]).flat();
             let colors = P.map(p => p.color).flat();
 
