@@ -64,7 +64,7 @@ export function Mat(h, w, arrOfArr) {
 
             let newMatrix = [];
             for (let index = 0; index < this.h; index++) {
-                newMatrix.push(this.value[0] * otherMatrix.value[0]);
+                newMatrix.push(this.value[index][0] * otherMatrix.value[index][0]);
             }
 
             return new Mat(this.h, this.w, newMatrix);
