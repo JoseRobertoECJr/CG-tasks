@@ -2,8 +2,8 @@ import { imageRGB, vec2Col,
     points, lines, lineStrip, lineLoop, triangles, triangleStrip, triangleFan,
     red, green, blue, yellow, cyan, orange, white
 } from '../render2d.js';
-import { clipRectangle, line, clip } from '../clip2d.js';
-import { vec2 } from '../vec.js';
+import { clipRectangle, clip } from '../clip2d.js';
+import { line, toLines } from '../line.js';
 
 export function main() {
 
@@ -15,24 +15,14 @@ export function main() {
         new vec2Col([220, 30], blue),
         new vec2Col([350, 90], yellow),
         new vec2Col([70, 300], cyan),
-        new vec2Col([320, 150], orange)
+        new vec2Col([320, 150], orange),
+        new vec2Col([340, 200], orange),
     ];
 
-    let lines = [];
-    for(let i = 0; i < P.length - 1; i++) {
-        lines.push(new line(P[i], P[i+1]));
-    }
+    const pLiness = toLines(P);
 
-    const newLines = clip(lines, R)
-    .map(l =>
-        [[
-            l.p,
-            l.q
-        ], lineStrip]
-    );
-
-    console.log(lines)
-    console.log(newLines)
+    const pLines = clip(pLiness, R)
+        .map(l => [[ l.p, l.q], lineStrip]);
 
     const RP = [
         new vec2Col([R.x0,R.y0], blue),
@@ -48,6 +38,6 @@ export function main() {
     G.render2d([
         //[P, lineStrip],
         [RP, lineLoop],
-        ...newLines
+        ...pLines
     ]);
 }

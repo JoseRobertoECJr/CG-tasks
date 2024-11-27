@@ -1,6 +1,7 @@
 import { vec2 } from './vec.js';
 import { semiplane } from './semiplane.js';
 import { vec2Col } from './render2d.js';
+import { line } from './line.js';
 
 export function clipRectangle(x0, y0, x1, y1) {
     this.x0 = x0;
@@ -16,11 +17,6 @@ export function clipRectangle(x0, y0, x1, y1) {
             new semiplane(new vec2([x1, y1]), new vec2([0, -1])) // up
         ];
     }
-}
-
-export function line(P, Q) {
-    this.p = P;
-    this.q = Q;
 }
 
 export function clipLine(lin, rect) {
