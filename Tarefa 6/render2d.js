@@ -1,154 +1,123 @@
-export function ImageRGB() {
+import { vec2 } from './vec.js';
 
-    const vertexShaderSource = `
-        attribute vec2 aPosition;
-        uniform vec2 uResolution;
-        void main() {
-            // Converte as coordenadas do canvas para o clip space
-            vec2 clipSpace = (aPosition / uResolution) * 2.0 - 1.0;
-            gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
-        }
-    `;
+const canvas = document.getElementById('surface');
+const gl = canvas.getContext('webgl');
 
-    const fragmentShaderSource = `
-        precision mediump float;
-        uniform vec4 uColor;
-        void main() {
-            gl_FragColor = uColor;
-        }
-    `;
+export function vec2Col(vec, color) {
+    this.point = new vec2(vec);
+    this.color = color;
+}
 
-    // Compila shader
-    const compileShader = (gl, type, source) => {
-        const shader = gl.createShader(type);
-        gl.shaderSource(shader, source);
-        gl.compileShader(shader);
+export const points = gl.POINTS;
+export const lines = gl.LINES;
+export const lineStrip = gl.LINE_STRIP;
+export const lineLoop = gl.LINE_LOOP;
+export const triangles = gl.TRIANGLES;
+export const triangleStrip = gl.TRIANGLE_STRIP;
+export const triangleFan = gl.TRIANGLE_FAN;
 
-        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            console.error('Erro ao compilar shader', gl.getShaderInfoLog(shader));
-            gl.deleteShader(shader);
-            return null;
-        }
+export const red = [1, 0, 0];
+export const green = [0, 1, 0];
+export const blue = [0, 0, 1];
+export const yellow = [1, 1, 0];
+export const cyan = [0, 1, 1];
+export const orange = [1, 165/255, 0];
+export const white = [1, 1, 1];
+export const black = [0, 0, 0];
 
-        return shader;
-    }
+export function imageRGB() {
 
-    // Cria programa
-    const createProgram = (gl, vertexShader, fragmentShader) => {
-        const program = gl.createProgram();
-        gl.attachShader(program, vertexShader);
-        gl.attachShader(program, fragmentShader);
-        gl.linkProgram(program);
-
-        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-            console.error('Erro ao criar o programa', gl.getProgramInfoLog(shaderProgram));
-            gl.deleteProgram(program);
-            return null;
-        }
-
-        return program;
-    }
-
-    let canvas = document.getElementById('surface');
-    let gl = canvas.getContext('webgl');
-    let colorUniformLocation;
-    let positionLocation;
-    let resolutionUniformLocation;
+    this.clearColor = white;
 
     if (!gl) {
-        console.error('WebGL not supported');
+        console.error('WebGL não está disponível');
         return;
     }
 
-    // Compila shaders
-    const vertexShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-    const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+    // Vertex Shader Source
+    const vertexShaderSource = `
+        attribute vec2 a_position;
+        attribute vec3 a_color;
+        varying vec3 v_color;
 
-    // Cria programa
-    const program = createProgram(gl, vertexShader, fragmentShader);
+        void main() {
+            gl_Position = vec4(a_position, 0.0, 1.0);
+            v_color = a_color;
+        }
+    `;
+
+    // Fragment Shader Source
+    const fragmentShaderSource = `
+        precision mediump float;
+        varying vec3 v_color;
+
+        void main() {
+            gl_FragColor = vec4(v_color, 1.0);
+        }
+    `;
+
+    // Função para criar shader
+    function createShader(gl, type, source) {
+        const shader = gl.createShader(type);
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            console.error(gl.getShaderInfoLog(shader));
+            gl.deleteShader(shader);
+            return null;
+        }
+        return shader;
+    }
+
+    // Compilando os shaders
+    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+    // Criando o programa WebGL
+    const program = gl.createProgram();
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.error(gl.getProgramInfoLog(program));
+        return;
+    }
+
     gl.useProgram(program);
 
-    positionLocation = gl.getAttribLocation(program, 'aPosition');
-    resolutionUniformLocation = gl.getUniformLocation(program, 'uResolution');
-    colorUniformLocation = gl.getUniformLocation(program, 'uColor');
+    this.render2d = (P, primitiveType) => {
 
-    // Criar buffer para os vertices
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        let positions = P.map(p => [(p.point.value[0]*2/canvas.width)-1, (p.point.value[1]*2/canvas.height)-1]).flat();
+        let colors = P.map(p => p.color).flat();
 
-
-    this.render2d = () => {
-        let positions = [];
-        const numSquaresPerRow = 10;
-    
-        // Define a altura e largura de cada quadrado para termos 8 em linha e coluna
-        const squareWidth = canvas.width / numSquaresPerRow;
-        const squareHeight = canvas.height / numSquaresPerRow;
-        
-        // Cria os quadrados, cada um sendo 2 triangulos
-        for (let y = 0; y < canvas.height; y += squareHeight) {
-            for (let x = 0; x < canvas.width; x += squareWidth) {
-                positions.push(
-                    // vertices do primeiro triangulo
-                    x, y,
-                    x + squareWidth, y,
-                    x, y + squareHeight,
-    
-                    // vertices do segundo triangulo
-                    x, y + squareHeight,
-                    x + squareWidth, y,
-                    x + squareWidth, y + squareHeight
-                );
-            }
-        }
-    
-        // Define os vertices dos triangulos no buffer
+        // Buffer de posições
+        const positionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-    
-        gl.enableVertexAttribArray(positionLocation);
+
+        const positionLocation = gl.getAttribLocation(program, 'a_position');
         gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-    
-        gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
-    
-    
-        // Define as cores dos quadrados com base na paridade (1)
-        const colors = {
-            preto: () => gl.uniform4f(colorUniformLocation, 0, 0, 0, 1),
-            bege: () => gl.uniform4f(colorUniformLocation, 240/255, 235/255, 209/255, 1)
-        }
-        const color = {
-            0: { 0: () => colors.preto(), 1: () => colors.bege() },
-            1: { 0: () => colors.bege(), 1: () => colors.preto() },
-        }
-    
-        // Desenha os quadrados
-        const squareCount = (positions.length / 2) / 6;
-        for (let i = 0; i < squareCount; ++i) {
-            const row = Math.floor(i / numSquaresPerRow);
-            const col = i % numSquaresPerRow;
-            
-            // Define as cores dos quadrados com base na paridade (2)
-            color[row%2][col%2]();
-            
-            // Desenha os quadrados desenhando os 2 triangulos com a cor definida
-            gl.drawArrays(gl.TRIANGLES, i * 6, 6);
-        }
-    }
+        gl.enableVertexAttribArray(positionLocation);
 
-    this.drawSquares = () => {
+        // Buffer de cores
+        const colorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 
-    }
+        const colorLocation = gl.getAttribLocation(program, 'a_color');
+        gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(colorLocation);
 
-    this.drawTriangles = () => {
-        
-    }
-
-    this.drawLineStrip = () => {
-
-    }
-
-    this.fill = (...params) => {
-        gl.clearColor(...params);
+        // Limpar e desenhar a cena
+        gl.clearColor(...this.clearColor, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
+
+        gl.drawArrays(primitiveType, 0, positions.length / 2);
+    }
+
+    this.fill = (color) => {
+        this.clearColor = color;
     }
 }
+

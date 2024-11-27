@@ -1,14 +1,22 @@
-import { ImageRGB } from '../render2d.js';
+import { imageRGB, vec2Col,
+    points, lines, lineStrip, lineLoop, triangles, triangleStrip, triangleFan,
+    red, green, blue, yellow, cyan, orange, white
+} from '../render2d.js';
 
 export function main() {
 
-    // Cria o canvas
-    let G = new ImageRGB();
+    const P = [
+        new vec2Col([20, 20], red),
+        new vec2Col([80, 60], green),
+        new vec2Col([220, 30], blue),
+        new vec2Col([350, 90], yellow),
+        new vec2Col([70, 300], cyan),
+        new vec2Col([320, 150], orange)
+    ];
 
-    console.log(G);
+    let G = new imageRGB();
 
-    // Define a cor de fundo e limpa a tela
-    G.fill(0, 0, 0, 1.0);
+    G.fill(white);
     
-    G.render2d();
+    G.render2d(P, lineStrip);
 }
