@@ -23,8 +23,16 @@ export function main() {
         new vec2Col([364, 208], yellow),
         new vec2Col([229, 114], green),
     ];
-
     const polygon = clipPolygon(P, R);
+
+
+    const Q = [
+        new vec2Col([ 20, 20], red),
+        new vec2Col([100, 100], blue),
+        new vec2Col([200, 50], cyan)
+    ];
+    const qolygon = clipPolygon(Q, R);
+
 
     console.log(polygon.map(v => v.point.value.flat()))
 
@@ -32,7 +40,9 @@ export function main() {
     G.fill(white);
     G.render2d([
         //[P, triangleFan],
+        //[Q, triangleFan],
         [RP, lineLoop],
-        [polygon, triangleFan]
+        [polygon, triangleFan],
+        [qolygon, triangleFan]
     ]);
 }
