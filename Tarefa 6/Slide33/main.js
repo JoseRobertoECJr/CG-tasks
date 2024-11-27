@@ -20,13 +20,14 @@ export function main() {
 
     let lines = [];
     for(let i = 0; i < P.length - 1; i++) {
-        lines.push(new line(P[i].point, P[i+1].point));
+        lines.push(new line(P[i], P[i+1]));
     }
 
-    const newLines = clip(lines, R).map(l =>
+    const newLines = clip(lines, R)
+    .map(l =>
         [[
-            new vec2Col(l.p.value.flat(), red),
-            new vec2Col(l.q.value.flat(), red)
+            l.p,
+            l.q
         ], lineStrip]
     );
 
