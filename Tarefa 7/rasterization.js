@@ -1,4 +1,5 @@
 import { vec2Col } from './render2d.js';
+import { vec2 } from './vec.js';
 
 export function implicitFunc(func, height, width, color) {
     
@@ -165,5 +166,15 @@ export function simpleRasterizeTriangle(triang) {
     const ymin = Math.ceil(Math.min(Av[1], Bv[1], Cv[1]));
     const ymax = Math.floor(Math.max(Av[1], Bv[1], Cv[1]));
 
-    
+    let out = [];
+    let p = {};
+
+    for(p.y = ymin; p.y <= ymax; p.y++) {
+        for(p.x = xmin; p.x <= xmax; p.x++) {
+            if(isInside(new vec2([p.x, p.y]), triang)) {
+                out.push();
+            }
+        }
+    }
+
 }
