@@ -89,3 +89,40 @@ export function get2DPosition(v3) {
     
     return vec2([v3ValueFlat[0]/v3ValueFlat[2], v3ValueFlat[1]/v3ValueFlat[2]]);
 }
+
+export function intersectSemirays(line1, line2) {
+
+    const x0 = line1.p.point.value.flat()[0];
+    const y0 = line1.p.point.value.flat()[1];
+    const x1 = line1.q.point.value.flat()[0];
+    const y1 = line1.q.point.value.flat()[1];
+
+    const x2 = line2.p.point.value.flat()[0];
+    const y2 = line2.p.point.value.flat()[1];
+    const x3 = line2.q.point.value.flat()[0];
+    const y3 = line2.q.point.value.flat()[1];
+
+    // Calcula os determinantes
+    const det = (x1 - x0) * (y3 - y2) - (y1 - y0) * (x3 - x2);
+
+    if (det === 0) {
+        // Se o determinante for zero, as retas são paralelas
+        return false;
+    }
+
+    // Calcula os parâmetros t e u
+    const t = ((x2 - x0) * (y3 - y2) - (y2 - y0) * (x3 - x2)) / det;
+    const u = ((x2 - x0) * (y1 - y0) - (y2 - y0) * (x1 - x0)) / det;
+
+    // Verifica se os parâmetros estão no intervalo [0, 1], o que indica interseção no segmento
+    if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+        // Calcula o ponto de interseção
+        const px = x0 + t * (x1 - x0);
+        const py = y0 + t * (y1 - y0);
+
+        return new vec2([px, py]);
+    }
+
+    // Sem interseção nas semirretas
+    return false;
+  }

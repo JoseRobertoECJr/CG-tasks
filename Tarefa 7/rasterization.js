@@ -1,6 +1,7 @@
 import { vec2Col } from './render2d.js';
 import { vec2 } from './vec.js';
-import { barycentricCoords, isInside } from './geometry.js';
+import { barycentricCoords, isInside, intersectSemirays } from './geometry.js';
+import { line } from './line.js';
 
 export function implicitFunc(func, height, width, color) {
     
@@ -191,3 +192,46 @@ export function simpleRasterizeTriangle(triang) {
 
     return out;
 }
+
+export function scanline(vec2ColArr, height, width) {
+    let out = [];
+
+    for(let y = 0; y < height; y++) {
+
+        let xIntersects = [];
+
+        for(let i = 0; i < vec2ColArr.length; i++) {
+
+            const vec1 = vec2ColArr[i];
+            const vec2 = vec2ColArr[(i+1) % vec2ColArr.length];
+
+            let semiray = new line(
+                new vec2Col(vec1.point.value.flat(), vec1.color),
+                new vec2Col(vec2.point.value.flat(), vec2.color)
+            );
+
+            let lineY = new line(
+                new vec2Col([0, y], [1, 1, 1]), // add qualquer cor
+                new vec2Col([width, y], [1, 1, 1]) // add qualquer cor
+            );
+
+            const intersect = intersectSemirays(semiray, lineY);
+            
+            if(intersect) {
+                // TO DO: calcula cores
+                xIntersects.push(new vec2Col(intersect.value.flat(), [0, 0, 0]));
+            }
+        }
+
+        xIntersects.sort((a, b) => a.point.value[0][0] - b.point.value[0][0]);
+
+        for(let i = 0; i < xIntersects.length; i++) {
+            if(!i%2) {
+                out.push(...rasterizeLine(new line(xIntersects[i], xIntersects[(i+1)%xIntersects.length])))
+            }
+        }
+    }
+
+    return out;
+}
+
