@@ -10,7 +10,9 @@ export function main() {
     const triang = [
         new vec2Col([20, 50], red),
         new vec2Col([524, 100], blue),
-        new vec2Col([205, 567], green)
+        new vec2Col([400, 300], green),
+        new vec2Col([590, 567], green),
+        new vec2Col([205, 567], green),
     ];
 
     // const P = simpleRasterizeTriangle(triang);
