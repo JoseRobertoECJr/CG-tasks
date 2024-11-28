@@ -13,11 +13,20 @@ export function triArea(a, b, c) {
 export function barycentricCoords(p, P) {
     const aT = triArea(P[0], P[1], P[2]);
 
+    // alfas
     return new vec3([
         triArea(p, P[1], P[2]) / aT,
         triArea(P[0], p, P[2]) / aT,
         triArea(P[0], P[1], p) / aT,
     ]);
+}
+
+export function isInside(alfas) {
+    const aValues = alfas.value.flat();
+
+    return aValues[0] >= 0 && aValues[0] <= 1 &&
+        aValues[1] >= 0 && aValues[1] <= 1 &&
+        aValues[2] >= 0 && aValues[2] <= 1;
 }
 
 // M: bezier cubico: M = 3

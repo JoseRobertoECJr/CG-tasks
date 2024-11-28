@@ -1,5 +1,6 @@
 import { vec2Col } from './render2d.js';
 import { vec2 } from './vec.js';
+import { barycentricCoords, isInside } from './geometry.js';
 
 export function implicitFunc(func, height, width, color) {
     
@@ -171,10 +172,22 @@ export function simpleRasterizeTriangle(triang) {
 
     for(p.y = ymin; p.y <= ymax; p.y++) {
         for(p.x = xmin; p.x <= xmax; p.x++) {
-            if(isInside(new vec2([p.x, p.y]), triang)) {
-                out.push();
+
+            const alfas = barycentricCoords(new vec2([p.x, p.y]), [A.point, B.point, C.point])
+
+            const alfasV = alfas.value.flat();
+
+            const color = [
+                A.color[0] * alfasV[0] + B.color[0] * alfasV[1] + C.color[0] * alfasV[2], // red
+                A.color[1] * alfasV[0] + B.color[1] * alfasV[1] + C.color[1] * alfasV[2], // blue
+                A.color[2] * alfasV[0] + B.color[2] * alfasV[1] + C.color[2] * alfasV[2], // green
+            ];
+
+            if(isInside(alfas)) {
+                out.push(new vec2Col([p.x, p.y], color));
             }
         }
     }
 
+    return out;
 }
