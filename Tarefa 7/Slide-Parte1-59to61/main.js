@@ -4,7 +4,6 @@ import { imageRGB, vec2Col,
     points, lines, lineStrip, lineLoop, triangles, triangleStrip, triangleFan,
     red, green, blue, yellow, cyan, orange, white, canvas
 } from '../render2d.js';
-import { vec2 } from '../vec.js';
 
 export function main() {
 

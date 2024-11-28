@@ -150,3 +150,20 @@ export function rasterizeLine(lin, method) {
 
     return method(lin.p, lin.q);
 }
+
+export function simpleRasterizeTriangle(triang) {
+    const A = triang.a;
+    const B = triang.b;
+    const C = triang.c;
+
+    const Av = A.point.value.flat();
+    const Bv = B.point.value.flat();
+    const Cv = C.point.value.flat();
+
+    const xmin = Math.ceil(Math.min(Av[0], Bv[0], Cv[0]));
+    const xmax = Math.floor(Math.max(Av[0], Bv[0], Cv[0]));
+    const ymin = Math.ceil(Math.min(Av[1], Bv[1], Cv[1]));
+    const ymax = Math.floor(Math.max(Av[1], Bv[1], Cv[1]));
+
+    
+}
