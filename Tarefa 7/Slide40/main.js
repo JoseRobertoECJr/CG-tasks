@@ -7,8 +7,8 @@ import { vec2 } from '../vec.js';
 
 export function main() {
 
-    const P = lineFunc(new vec2Col([20, 300], red), new vec2Col([280, 200], red));
-    const Q = lineFunc(new vec2Col([20, 20], blue), new vec2Col([80, 334], blue));
+    const P = dda(new vec2Col([20, 300], red), new vec2Col([280, 200], red));
+    const Q = dda(new vec2Col([20, 20], blue), new vec2Col([80, 334], blue));
 
     let Img = new imageRGB();
 

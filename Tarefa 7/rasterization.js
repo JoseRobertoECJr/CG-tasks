@@ -1,5 +1,4 @@
 import { vec2Col } from './render2d.js';
-import { vec2 } from './vec.js';
 
 export function implicitFunc(func, height, width, color) {
     
@@ -40,6 +39,39 @@ export function lineFunc(vec2ColorA, vec2ColorB) {
         ];
 
         out.push(new vec2Col([x, y], color));
+    }
+
+    return out;
+}
+
+export function dda(vec2ColorA, vec2ColorB) {
+    
+    const dif = vec2ColorB.point.sub(vec2ColorA.point);
+    const delta = Math.max(Math.abs(dif.value.flat()[0]), Math.abs(dif.value.flat()[1]));
+
+    const d = dif.mult(1 / delta);
+    let p = vec2ColorA.point;
+
+    const x0 = Math.round(vec2ColorA.point.value.flat()[0]);
+    const x1 = Math.round(vec2ColorB.point.value.flat()[0]);
+
+    let out = [];
+
+    for(let i = 0; i <= delta; i++) {
+
+        const t = (p.value.flat()[0] - x0) /(x1 - x0);
+
+        const color = [
+            vec2ColorA.color[0] * (1-t) + vec2ColorB.color[0] * t, // red
+            vec2ColorA.color[1] * (1-t) + vec2ColorB.color[1] * t, // blue
+            vec2ColorA.color[2] * (1-t) + vec2ColorB.color[2] * t, // green
+        ];
+
+        const newVec = new vec2Col([Math.round(p.value.flat()[0]), Math.round(p.value.flat()[1])], color);
+
+        out.push(newVec);
+
+        p = p.add(d);
     }
 
     return out;
