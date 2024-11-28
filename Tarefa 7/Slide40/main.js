@@ -1,4 +1,4 @@
-import { implicitFunc, lineFunc, dda } from '../rasterization.js';
+import { implicitFunc, simple, dda } from '../rasterization.js';
 import { imageRGB, vec2Col,
     points, lines, lineStrip, lineLoop, triangles, triangleStrip, triangleFan,
     red, green, blue, yellow, cyan, orange, white, canvas

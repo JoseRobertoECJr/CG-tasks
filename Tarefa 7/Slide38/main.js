@@ -1,4 +1,4 @@
-import { implicitFunc, lineFunc, dda } from '../rasterization.js';
+import { implicitFunc, simple, dda } from '../rasterization.js';
 import { imageRGB, vec2Col,
     points, lines, lineStrip, lineLoop, triangles, triangleStrip, triangleFan,
     red, green, blue, yellow, cyan, orange, white, canvas
@@ -7,8 +7,8 @@ import { vec2 } from '../vec.js';
 
 export function main() {
 
-    const P = lineFunc(new vec2Col([20, 300], red), new vec2Col([280, 200], red));
-    const Q = lineFunc(new vec2Col([20, 20], blue), new vec2Col([80, 334], blue));
+    const P = simple(new vec2Col([20, 300], red), new vec2Col([280, 200], red));
+    const Q = simple(new vec2Col([20, 20], blue), new vec2Col([80, 334], blue));
 
     let Img = new imageRGB();
 

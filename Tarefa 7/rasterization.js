@@ -15,7 +15,7 @@ export function implicitFunc(func, height, width, color) {
     return vec2ColArr;
 }
 
-export function lineFunc(vec2ColorA, vec2ColorB) {
+export function simple(vec2ColorA, vec2ColorB) {
     let out = [];
 
     const d = vec2ColorB.point.sub(vec2ColorA.point);
@@ -75,4 +75,78 @@ export function dda(vec2ColorA, vec2ColorB) {
     }
 
     return out;
+}
+
+export function bresenhamBase(dx, dy) {
+    let out = [];
+
+    let D = 2*dy - dx;
+    let y = 0;
+
+    for(let x = 0; x <= dx; x++) {
+        out.push({ x, y });
+        if(D > 0) {
+            y++;
+            D -= 2*dx;
+        }
+        D += 2*dy;
+    }
+
+    return out;
+}
+
+export function bresenhamInterm(dx, dy) {
+    let out = [];
+
+    if(dx >= dy) {
+        out = bresenhamBase(dx, dy);
+    } else {
+        let res = bresenhamBase(dy, dx);
+        out = res.map(p => { return { x: p.y, y: p.x } });
+    }
+
+    return out;
+}
+
+export function bresenham(vec2ColorA, vec2ColorB) {
+
+    let p0x = vec2ColorA.point.value.flat()[0];
+    let p1x = vec2ColorB.point.value.flat()[0];
+
+    const p0 = p0x <= p1x ? vec2ColorA : vec2ColorB;
+    const p1 = p0x <= p1x ? vec2ColorB : vec2ColorA;
+
+    p0x = p0.point.value.flat()[0];
+    let p0y = p0.point.value.flat()[1];
+
+    p1x = p1.point.value.flat()[0];
+    let p1y = p1.point.value.flat()[1];
+
+    let res = bresenhamInterm(p1x - p0x, Math.abs(p1y - p0y));
+
+    const s = p0y <= p1y ? 1 : -1;
+
+    let out = [];
+    for(const p of res) {
+
+        const x = p0x + p.x;
+
+        const t = (x - p0x) /(p1x - p0x);
+
+        const color = [
+            p0.color[0] * (1-t) + p1.color[0] * t, // red
+            p0.color[1] * (1-t) + p1.color[1] * t, // blue
+            p0.color[2] * (1-t) + p1.color[2] * t, // green
+        ];
+
+        out.push(new vec2Col([x, p0y + s * p.y], color));
+    }
+
+    return out;
+}
+
+export function rasterizeLine(lin, method) {
+    if(!method) method = bresenham;
+
+    return method(lin.p, lin.q);
 }
