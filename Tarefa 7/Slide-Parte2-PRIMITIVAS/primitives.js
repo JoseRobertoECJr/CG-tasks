@@ -1,13 +1,14 @@
 import { line } from "./line";
-import { rasterizeLine } from "./rasterization";
+import { rasterizeLine, rasterizeTriangle } from "./rasterization";
+import { triangle } from "./triangle";
 
 export const primitives = {
-    Lines: lines,
-    LineStrip: lineStrip,
-    LineLoop: lineLoop,
-    Triangles: 3,
-    TriangleStrip: 4,
-    TriangleFan: 5
+    lines: lines,
+    lineStrip: lineStrip,
+    lineLoop: lineLoop,
+    triangles: triangles,
+    triangleStrip: triangleStrip,
+    triangleFan: triangleFan
 };
 
 export function lines(vec2ColArr) {
@@ -49,3 +50,47 @@ export function lineLoop(vec2ColArr) {
     return out;
 }
 
+export function triangles(vec2ColArr) {
+
+    let out = [];
+
+    for(let i = 0; i < vec2ColArr.length - 2; i+3) {
+        out.push(...rasterizeTriangle(
+            new triangle(vec2ColArr[i],
+            vec2ColArr[i+1],
+            vec2ColArr[i+2]
+        )));
+    }
+    
+    return out;
+}
+
+export function triangleStrip(vec2ColArr) {
+
+    let out = [];
+
+    for(let i = 0; i < vec2ColArr.length - 2; i++) {
+        out.push(...rasterizeTriangle(
+            new triangle(vec2ColArr[i],
+            vec2ColArr[i+1],
+            vec2ColArr[i+2]
+        )));
+    }
+    
+    return out;
+}
+
+export function triangleFan(vec2ColArr) {
+
+    let out = [];
+
+    for(let i = 0; i < vec2ColArr.length - 2; i+2) {
+        out.push(...rasterizeTriangle(
+            new triangle(vec2ColArr[0],
+            vec2ColArr[i+1],
+            vec2ColArr[i+2]
+        )));
+    }
+    
+    return out;
+}
