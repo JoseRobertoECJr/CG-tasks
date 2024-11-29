@@ -39,3 +39,8 @@ export function dot(u, v) {
 
     return sum;
 }
+
+export function vec2Col(vec, color) {
+    this.point = new vec2(vec);
+    this.color = color;
+}

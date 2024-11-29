@@ -1,5 +1,4 @@
-import { vec2Col } from './render2d.js';
-import { vec2 } from './vec.js';
+import { vec2, vec2Col } from './vec.js';
 import { barycentricCoords, isInside, intersectSemirays } from './geometry.js';
 import { line } from './line.js';
 
@@ -193,13 +192,31 @@ export function simpleRasterizeTriangle(triang) {
     return out;
 }
 
-export function scanline(triang, height, width) {
+export function scanline(triang) {
 
+    const height = Math.max(
+        triang.a.point.value[1][0], triang.b.point.value[1][0], triang.c.point.value[1][0]
+    ) + 1;
+
+    const width = Math.max(
+        triang.a.point.value[0][0], triang.b.point.value[0][0], triang.c.point.value[0][0]
+    ) + 1;
+
+    const minHeight = Math.min(
+        triang.a.point.value[1][0], triang.b.point.value[1][0], triang.c.point.value[1][0]
+    ) - 1;
+
+    const minWidth = Math.min(
+        triang.a.point.value[0][0], triang.b.point.value[0][0], triang.c.point.value[0][0]
+    ) - 1;
+
+    console.log(width, height)
+    
     const vec2ColArr = [triang.a, triang.b, triang.c];
 
     let out = [];
 
-    for(let y = 0; y < height; y++) {
+    for(let y = minHeight; y < height; y++) {
 
         let xIntersects = [];
 
@@ -214,7 +231,7 @@ export function scanline(triang, height, width) {
             );
 
             let lineY = new line(
-                new vec2Col([0, y], [1, 1, 1]), // add qualquer cor
+                new vec2Col([minWidth, y], [1, 1, 1]), // add qualquer cor
                 new vec2Col([width, y], [1, 1, 1]) // add qualquer cor
             );
 
@@ -248,36 +265,8 @@ export function scanline(triang, height, width) {
     return out;
 }
 
-function calculateColor(vec2ColArr, vec2) {
+export function rasterizeTriangle(triang, method) {
+    if(!method) method = simpleRasterizeTriangle;
 
-    const vx = vec2.value[0][0];
-    const vy = vec2.value[1][0];
-    let totalDistance = 0;
-
-    for(let vecC of vec2ColArr) {
-
-        const vCx = vecC.point.value[0][0];
-        const vCy = vecC.point.value[1][0];
-
-        totalDistance += Math.sqrt(
-            Math.pow(vx - vCx, 2) + Math.pow(vy - vCy, 2)
-        );
-    }
-
-    let color = [0, 0, 0]
-    for(let vecC of vec2ColArr) {
-
-        const vCx = vecC.point.value[0][0];
-        const vCy = vecC.point.value[1][0];
-
-        const distance = Math.sqrt(
-            Math.pow(vx - vCx, 2) + Math.pow(vy - vCy, 2)
-        );
-
-        color[0] += vecC.color[0] * (totalDistance - distance) / (totalDistance * vec2ColArr.length);
-        color[1] += vecC.color[1] * (totalDistance - distance) / (totalDistance * vec2ColArr.length);
-        color[2] += vecC.color[2] * (totalDistance - distance) / (totalDistance * vec2ColArr.length);
-    }
-
-    return color;
+    return method(triang);
 }

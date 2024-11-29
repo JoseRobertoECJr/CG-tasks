@@ -1,9 +1,10 @@
 import { line } from '../line.js';
 import { bresenham, dda, rasterizeLine, simple } from '../rasterization.js';
-import { imageRGB, vec2Col,
+import { imageRGB,
     points, lines, lineStrip, lineLoop, triangles, triangleStrip, triangleFan,
     red, green, blue, yellow, cyan, orange, white, canvas
 } from '../render2d.js';
+import { vec2, vec2Col } from '../vec.js';
 
 export function main() {
 

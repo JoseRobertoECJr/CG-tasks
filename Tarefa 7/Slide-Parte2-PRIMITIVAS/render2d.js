@@ -1,12 +1,5 @@
-import { vec2 } from './vec.js';
-
 export const canvas = document.getElementById('surface');
 const gl = canvas.getContext('webgl');
-
-export function vec2Col(vec, color) {
-    this.point = new vec2(vec);
-    this.color = color;
-}
 
 export const points = gl.POINTS;
 export const lines = gl.LINES;

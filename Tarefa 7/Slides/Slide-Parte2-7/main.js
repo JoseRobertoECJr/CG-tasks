@@ -1,9 +1,10 @@
 import { line } from '../line.js';
 import { bresenham, dda, rasterizeLine, simple, simpleRasterizeTriangle } from '../rasterization.js';
-import { imageRGB, vec2Col, points,
+import { imageRGB, points,
     red, green, blue, yellow, cyan, orange, white, canvas
 } from '../render2d.js';
 import { triangle } from '../triangle.js';
+import { vec2, vec2Col } from '../vec.js';
 
 export function main() {
 
