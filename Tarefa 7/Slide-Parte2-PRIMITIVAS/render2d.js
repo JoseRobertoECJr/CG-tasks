@@ -1,13 +1,15 @@
+import { primitives } from './primitives.js';
+
 export const canvas = document.getElementById('surface');
 const gl = canvas.getContext('webgl');
 
-export const points = gl.POINTS;
-export const lines = gl.LINES;
-export const lineStrip = gl.LINE_STRIP;
-export const lineLoop = gl.LINE_LOOP;
-export const triangles = gl.TRIANGLES;
-export const triangleStrip = gl.TRIANGLE_STRIP;
-export const triangleFan = gl.TRIANGLE_FAN;
+const points = gl.POINTS;
+const lines = gl.LINES;
+const lineStrip = gl.LINE_STRIP;
+const lineLoop = gl.LINE_LOOP;
+const triangles = gl.TRIANGLES;
+const triangleStrip = gl.TRIANGLE_STRIP;
+const triangleFan = gl.TRIANGLE_FAN;
 
 export const red = [1, 0, 0];
 export const green = [0, 1, 0];
@@ -89,7 +91,9 @@ export function imageRGB() {
         gl.clearColor(...this.clearColor, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
-        for(const [P, primitiveType] of params) {
+        for(const [Q, primitiveType] of params) {
+
+            const P = primitiveType(Q);
 
             let positions = P.map(p => [(p.point.value[0]*2/canvas.width)-1, (p.point.value[1]*2/canvas.height)-1]).flat();
             let colors = P.map(p => p.color).flat();
@@ -113,7 +117,7 @@ export function imageRGB() {
             gl.enableVertexAttribArray(colorLocation);
 
 
-            gl.drawArrays(primitiveType, 0, positions.length / 2);
+            gl.drawArrays(points, 0, positions.length / 2);
         }
     }
 
