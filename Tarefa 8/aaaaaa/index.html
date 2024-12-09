@@ -13,6 +13,28 @@
     <canvas id="webglCanvas"></canvas>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
     <script>
+
+        /*
+            - BRINQUE COM OS ANGULOS DE CÂMERA PARA VERIFICAR O ALGORITMO.
+            - AS FACES FICARÃO EM VERDE PARA AQUELAS QUE ESTÃO INICIALMENTE DE FRENTE PARA CÂMERA
+              E EM VERMELHO PARA AQUELAS QUE SOFRERÃO O CORTE E NÃO SERIAM RENDERIZADAS SEGUNDO
+              ALGORITMO BACKFACE CULLING 3D.
+        */
+
+        // Camera Position
+        const cameraPosition = [0, 0, 7];
+
+        // Ângulo de rotação (30 graus)
+        const angleX = Math.PI / 6;
+        const angleY = Math.PI / 6;
+
+        /*
+            - BRINQUE COM OS ANGULOS DE CÂMERA PARA VERIFICAR O ALGORITMO.
+            - AS FACES FICARÃO EM VERDE PARA AQUELAS QUE ESTÃO INICIALMENTE DE FRENTE PARA CÂMERA
+              E EM VERMELHO PARA AQUELAS QUE SOFRERÃO O CORTE E NÃO SERIAM RENDERIZADAS SEGUNDO
+              ALGORITMO BACKFACE CULLING 3D.
+        */
+
         const canvas = document.getElementById('webglCanvas');
         const gl = canvas.getContext('webgl');
 
@@ -58,7 +80,6 @@
         const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
         const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
 
-        // Create and link program
         const program = gl.createProgram();
         gl.attachShader(program, vertexShader);
         gl.attachShader(program, fragmentShader);
@@ -70,7 +91,7 @@
         gl.useProgram(program);
 
         // Triangles data
-        const triangles = [
+        let triangles = [
             // Front face
             {
                 vertices: [
@@ -78,7 +99,7 @@
                     1, -1,  1,
                     1,  1,  1
                 ],
-                color: [1.0, 0.5, 0.8] // Cyan
+                color: [1.0, 0.5, 0.8]
             },
             {
                 vertices: [
@@ -86,7 +107,7 @@
                     1,  1,  1,
                     -1,  1,  1
                 ],
-                color: [1.0, 0.5, 0.8] // Cyan
+                color: [1.0, 0.5, 0.8]
             },
 
             // Back face
@@ -96,7 +117,7 @@
                     -1,  1, -1,
                     1,  1, -1
                 ],
-                color: [1.0, 0.0, 0.0] // Cyan
+                color: [1.0, 0.0, 0.0]
             },
             {
                 vertices: [
@@ -104,7 +125,7 @@
                     1,  1, -1,
                     1, -1, -1
                 ],
-                color: [1.0, 0.0, 0.0] // Cyan
+                color: [1.0, 0.0, 0.0]
             },
 
             // Top face
@@ -114,7 +135,7 @@
                     -1,  1,  1,
                     1,  1,  1
                 ],
-                color: [0.0, 0.0, 1.0] // Cyan
+                color: [0.0, 0.0, 1.0]
             },
             {
                 vertices: [
@@ -122,7 +143,7 @@
                     1,  1,  1,
                     1,  1, -1
                 ],
-                color: [0.0, 0.0, 1.0] // Cyan
+                color: [0.0, 0.0, 1.0]
             },
 
             // Bottom face
@@ -132,7 +153,7 @@
                     1, -1, -1,
                     1, -1,  1
                 ],
-                color: [0.0, 1.0, 0.0] // Cyan
+                color: [0.0, 1.0, 0.0]
             },
             {
                 vertices: [
@@ -140,7 +161,7 @@
                     1, -1,  1,
                     -1, -1,  1
                 ],
-                color: [0.0, 1.0, 0.0] // Cyan
+                color: [0.0, 1.0, 0.0]
             },
 
             // Right face
@@ -150,7 +171,7 @@
                     1,  1, -1,
                     1,  1,  1
                 ],
-                color: [0.0, 0.5, 0.8] // Cyan
+                color: [0.0, 0.5, 0.8]
             },
             {
                 vertices: [
@@ -158,7 +179,7 @@
                     1,  1,  1,
                     1, -1,  1
                 ],
-                color: [0.0, 0.5, 0.8] // Cyan
+                color: [0.0, 0.5, 0.8]
             },
 
             // Left face
@@ -168,7 +189,7 @@
                     -1, -1,  1,
                     -1,  1,  1
                 ],
-                color: [0.0, 0.5, 0.8] // Cyan
+                color: [0.0, 0.5, 0.8]
             },
             {
                 vertices: [
@@ -176,18 +197,119 @@
                     -1,  1,  1,
                     -1,  1, -1
                 ],
-                color: [0.0, 0.5, 0.8] // Cyan
+                color: [0.0, 0.5, 0.8]
             }
         ];
 
-        // Combine all vertex data
+        function rotateVector(vector, axis, angle) {
+            const axisLength = Math.sqrt(axis[0]**2 + axis[1]**2 + axis[2]**2);
+            const unitAxis = [axis[0] / axisLength, axis[1] / axisLength, axis[2] / axisLength];
+
+            const cosAngle = Math.cos(angle);
+            const sinAngle = Math.sin(angle);
+
+            const cross = [
+                unitAxis[1] * vector[2] - unitAxis[2] * vector[1],
+                unitAxis[2] * vector[0] - unitAxis[0] * vector[2],
+                unitAxis[0] * vector[1] - unitAxis[1] * vector[0]
+            ];
+
+            const dot = unitAxis[0] * vector[0] + unitAxis[1] * vector[1] + unitAxis[2] * vector[2];
+
+            const rotatedVector = [
+                vector[0] * cosAngle + cross[0] * sinAngle + unitAxis[0] * dot * (1 - cosAngle),
+                vector[1] * cosAngle + cross[1] * sinAngle + unitAxis[1] * dot * (1 - cosAngle),
+                vector[2] * cosAngle + cross[2] * sinAngle + unitAxis[2] * dot * (1 - cosAngle)
+            ];
+
+            return rotatedVector;
+        }
+
+        function rotateTriangle(triangle, axis, angle) {
+            const rotatedTriangle = triangle.map(vertex => rotateVector(vertex, axis, angle));
+            return rotatedTriangle;
+        }
+
         const vertexData = [];
         const colorData = [];
 
+        function calculateNormal(v0, v1, v2) {
+            const edge1 = [
+                v1[0] - v0[0],
+                v1[1] - v0[1],
+                v1[2] - v0[2]
+            ];
+            const edge2 = [
+                v2[0] - v0[0],
+                v2[1] - v0[1],
+                v2[2] - v0[2]
+            ];
+            const normal = [
+                edge1[1] * edge2[2] - edge1[2] * edge2[1],
+                edge1[2] * edge2[0] - edge1[0] * edge2[2],
+                edge1[0] * edge2[1] - edge1[1] * edge2[0]
+            ];
+            const length = Math.sqrt(normal[0]**2 + normal[1]**2 + normal[2]**2);
+            return normal.map(n => n / length);
+        }
+
+        function isBackface(v0, v1, v2, cameraPosition) {
+            const normal = calculateNormal(v0, v1, v2);
+            const viewVector = [
+                cameraPosition[0] - v0[0],
+                cameraPosition[1] - v0[1],
+                cameraPosition[2] - v0[2]
+            ];
+            const length = Math.sqrt(viewVector[0]**2 + viewVector[1]**2 + viewVector[2]**2);
+            const normalizedViewVector = viewVector.map(v => v / length);
+
+            const dotProduct = normal[0] * normalizedViewVector[0] +
+                            normal[1] * normalizedViewVector[1] +
+                            normal[2] * normalizedViewVector[2];
+
+            return dotProduct <= 0;
+        }
+
+        // Eixo de rotacao
+        const axisX = [1, 0, 0];
+        const axisY = [0, 1, 0];
+
+        triangles = triangles.map(tr => {
+
+            let rt = tr.vertices;
+
+            rt = rotateTriangle([
+                [rt[0], rt[1], rt[2]],
+                [rt[3], rt[4], rt[5]],
+                [rt[6], rt[7], rt[8]]
+            ], axisX, angleX).flat();
+
+            rt = rotateTriangle([
+                [rt[0], rt[1], rt[2]],
+                [rt[3], rt[4], rt[5]],
+                [rt[6], rt[7], rt[8]]
+            ], axisY, angleY).flat();
+
+            return { vertices: rt, color: tr.color }
+        });
+
         triangles.forEach(triangle => {
+
             vertexData.push(...triangle.vertices);
+
+            let color = [0.0, 1.0, 0.0];
+
+            if(isBackface(
+                [triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]],
+                [triangle.vertices[3], triangle.vertices[4], triangle.vertices[5]],
+                [triangle.vertices[6], triangle.vertices[7], triangle.vertices[8]],
+                cameraPosition))
+            {
+                color = [1.0, 0.0, 0.0];
+            }
+
             for (let i = 0; i < triangle.vertices.length / 3; i++) {
-                colorData.push(...triangle.color);
+                colorData.push(...color);
             }
         });
 
@@ -256,7 +378,7 @@
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
             mat4.identity(modelViewMatrix);
-            mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -5]);
+            mat4.translate(modelViewMatrix, modelViewMatrix, [-cameraPosition[0], -cameraPosition[1], -cameraPosition[2]]);
             mat4.rotateX(modelViewMatrix, modelViewMatrix, rotationX);
             mat4.rotateY(modelViewMatrix, modelViewMatrix, rotationY);
 
