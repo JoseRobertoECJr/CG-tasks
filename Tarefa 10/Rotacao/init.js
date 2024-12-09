@@ -4,6 +4,43 @@ const gl = canvas.getContext('webgl2');
 let shaderProgram;
 let V;
 let indices;
+let angleY = 0.2;
+let angleX = 0.2;
+let isDragging = false;
+let lastMouseX = 0;
+let lastMouseY = 0;
+
+// Funções de controle do mouse
+canvas.addEventListener('mousedown', function(event) {
+    if (event.button === 0) { // Verifica se o botão esquerdo foi pressionado
+      isDragging = true;
+      lastMouseX = event.clientX;
+      lastMouseY = event.clientY;
+    }
+});
+
+canvas.addEventListener('mousemove', function(event) {
+    if (isDragging) {
+      const deltaX = event.clientX - lastMouseX;
+      const deltaY = event.clientY - lastMouseY;
+
+      angleY += deltaX * 0.01;  // Ajuste de sensibilidade para rotação em Y
+      angleX += deltaY * 0.01;  // Ajuste de sensibilidade para rotação em X
+
+      lastMouseX = event.clientX;
+      lastMouseY = event.clientY;
+    }
+});
+
+canvas.addEventListener('mouseup', function(event) {
+    if (event.button === 0) {
+      isDragging = false;
+    }
+});
+
+canvas.addEventListener('mouseleave', function() {
+    isDragging = false;
+});
 
 // Vertex Shader
 const vertexShaderSource = `
@@ -75,20 +112,23 @@ export function initBuffers() {
 
 export function desenha() {
     gl.clearColor(1, 1, 1, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.useProgram(shaderProgram);
     setupUniforms();
 
     gl.drawElements(gl.LINES, indices.length, gl.UNSIGNED_SHORT, 0);
+
+    requestAnimationFrame(desenha);
 }
 
 export function setupUniforms() {
     const modelView = mat4.create();
     mat4.identity(modelView);
     mat4.translate(modelView, modelView, [0, 0, -5]);
-    mat4.rotateY(modelView, modelView, 0.2);
-    mat4.rotateX(modelView, modelView, 0.2);
+    mat4.rotateY(modelView, modelView, angleY);
+    mat4.rotateX(modelView, modelView, angleX);
 
     const uModelView = gl.getUniformLocation(shaderProgram, "modelView");
     gl.uniformMatrix4fv(uModelView, false, modelView);
