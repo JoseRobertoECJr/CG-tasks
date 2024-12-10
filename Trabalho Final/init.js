@@ -10,6 +10,10 @@ let isDragging = false;
 let lastMouseX = 0;
 let lastMouseY = 0;
 
+let fov = Math.PI / 4;
+// Mouse scroll zoom
+let zoomSpeed = 0.05;  // Control the zoom speed
+
 // Funções de controle do mouse
 canvas.addEventListener('mousedown', function(event) {
     if (event.button === 0) { // Verifica se o botão esquerdo foi pressionado
@@ -40,6 +44,18 @@ canvas.addEventListener('mouseup', function(event) {
 
 canvas.addEventListener('mouseleave', function() {
     isDragging = false;
+});
+
+canvas.addEventListener('wheel', (e) => {
+    // Adjust FOV based on mouse scroll direction
+    if (e.deltaY < 0) {
+        fov -= zoomSpeed; // Zoom in (decrease FOV)
+    } else {
+        fov += zoomSpeed; // Zoom out (increase FOV)
+    }
+
+    // Clamp the FOV value to prevent it from going out of bounds
+    fov = Math.max(Math.min(fov, Math.PI / 2), 0.1);
 });
 
 // Vertex Shader
@@ -133,9 +149,8 @@ export function setupUniforms() {
     const uModelView = gl.getUniformLocation(shaderProgram, "modelView");
     gl.uniformMatrix4fv(uModelView, false, modelView);
 
-
     const projection = mat4.create();
-    mat4.perspective(projection, Math.PI / 4, canvas.width / canvas.height, 0.1, 100);
+    mat4.perspective(projection, fov, canvas.width / canvas.height, 0.1, 100);
 
     const uProjection = gl.getUniformLocation(shaderProgram, "projection");
     gl.uniformMatrix4fv(uProjection, false, projection);
