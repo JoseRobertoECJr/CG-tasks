@@ -19,7 +19,7 @@ function parseOBJ(objText) {
         const parts = line.trim().split(/\s+/);
 
         switch (parts[0]) {
-            case 'v': // Vértice
+            case 'v': // vertice
                 vertices.push(
                     parseFloat(parts[1]),
                     parseFloat(parts[2]),
@@ -27,14 +27,14 @@ function parseOBJ(objText) {
                 );
                 break;
 
-            case 'vt': // Coordenada de textura
+            case 'vt': // coordenada de textura
                 textures.push(
                     parseFloat(parts[1]),
                     parseFloat(parts[2])
                 );
                 break;
 
-            case 'vn': // Normal
+            case 'vn': // normal
                 normals.push(
                     parseFloat(parts[1]),
                     parseFloat(parts[2]),
@@ -42,10 +42,10 @@ function parseOBJ(objText) {
                 );
                 break;
 
-            case 'f': // Face
+            case 'f': // face
                 for (let i = 1; i < parts.length; i++) {
                     const vertexData = parts[i].split('/');
-                    indices.push(parseInt(vertexData[0]) - 1); // Índices de vértices
+                    indices.push(parseInt(vertexData[0]) - 1);
                 }
                 break;
         }
@@ -61,18 +61,3 @@ export async function getObj(url) {
     return modelData;
 }
 
-// (async function() {
-//     try {
-//         const objText = await loadOBJ('http://192.168.15.154:8080/Trabalho%20Final/teapot.obj');
-//         const modelData = parseOBJ(objText);
-
-//         console.log('Vértices:', modelData.vertices);
-//         console.log('Coordenadas de textura:', modelData.textures);
-//         console.log('Normais:', modelData.normals);
-//         console.log('Índices:', modelData.indices);
-
-//         // Use os dados processados para carregar buffers WebGL
-//     } catch (error) {
-//         console.error('Erro ao carregar o modelo .obj:', error);
-//     }
-// })();

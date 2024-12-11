@@ -9,7 +9,6 @@ export async function main() {
 
     const max = Math.max(...obj.vertices);
 
-    console.log(max)
     const objMap = obj.vertices.map(v => v/max);
 
     const V = new Float32Array(objMap);

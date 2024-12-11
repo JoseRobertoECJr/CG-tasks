@@ -9,14 +9,41 @@ let angleX = 0.2;
 let isDragging = false;
 let lastMouseX = 0;
 let lastMouseY = 0;
+let isMiddleMouseDown = false;
+let translateX = 0;
+let translateY = 0;
 
 let fov = Math.PI / 4;
-// Mouse scroll zoom
-let zoomSpeed = 0.05;  // Control the zoom speed
+let zoomSpeed = 0.05;
+
+canvas.addEventListener('mousedown', (e) => {
+    if (e.button === 1) { // Middle mouse button
+        isMiddleMouseDown = true;
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+    }
+});
+
+canvas.addEventListener('mouseup', (e) => {
+    if (e.button === 1) { // Middle mouse button
+        isMiddleMouseDown = false;
+    }
+});
+
+canvas.addEventListener('mousemove', (e) => {
+    if (isMiddleMouseDown) {
+        const deltaX = e.clientX - lastMouseX;
+        const deltaY = e.clientY - lastMouseY;
+        translateX += deltaX * 0.01;
+        translateY -= deltaY * 0.01;
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+    }
+});
 
 // Funções de controle do mouse
 canvas.addEventListener('mousedown', function(event) {
-    if (event.button === 0) { // Verifica se o botão esquerdo foi pressionado
+    if (event.button === 0) {
       isDragging = true;
       lastMouseX = event.clientX;
       lastMouseY = event.clientY;
@@ -28,8 +55,8 @@ canvas.addEventListener('mousemove', function(event) {
       const deltaX = event.clientX - lastMouseX;
       const deltaY = event.clientY - lastMouseY;
 
-      angleY += deltaX * 0.01;  // Ajuste de sensibilidade para rotação em Y
-      angleX += deltaY * 0.01;  // Ajuste de sensibilidade para rotação em X
+      angleY += deltaX * 0.01;
+      angleX += deltaY * 0.01;
 
       lastMouseX = event.clientX;
       lastMouseY = event.clientY;
@@ -47,18 +74,15 @@ canvas.addEventListener('mouseleave', function() {
 });
 
 canvas.addEventListener('wheel', (e) => {
-    // Adjust FOV based on mouse scroll direction
     if (e.deltaY < 0) {
-        fov -= zoomSpeed; // Zoom in (decrease FOV)
+        fov -= zoomSpeed;
     } else {
-        fov += zoomSpeed; // Zoom out (increase FOV)
+        fov += zoomSpeed;
     }
 
-    // Clamp the FOV value to prevent it from going out of bounds
     fov = Math.max(Math.min(fov, Math.PI / 2), 0.1);
 });
 
-// Vertex Shader
 const vertexShaderSource = `
     uniform mat4 modelView;
     uniform mat4 projection;
@@ -69,7 +93,6 @@ const vertexShaderSource = `
     }
 `;
 
-// Fragment Shader
 const fragmentShaderSource = `
     void main() {
         gl_FragColor = vec4(0, 0, 1, 1);
@@ -91,13 +114,8 @@ function compileShader(gl, source, type) {
 export function initShaders() {
 
     const vertexShader = compileShader(gl, vertexShaderSource, gl.VERTEX_SHADER);
-    // gl.shaderSource(vertexShader, vertexShaderSource);
-    // gl.compileShader(vertexShader);
 
     const fragmentShader = compileShader(gl, fragmentShaderSource, gl.FRAGMENT_SHADER);
-    // gl.shaderSource(fragmentShader, fragmentShaderSource);
-    // gl.compileShader(fragmentShader);
-
 
     shaderProgram = gl.createProgram();
     gl.attachShader(shaderProgram, vertexShader);
@@ -134,7 +152,7 @@ export function desenha() {
     gl.useProgram(shaderProgram);
     setupUniforms();
 
-    gl.drawElements(gl.LINES, indices.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
 
     requestAnimationFrame(desenha);
 }
@@ -142,7 +160,7 @@ export function desenha() {
 export function setupUniforms() {
     const modelView = mat4.create();
     mat4.identity(modelView);
-    mat4.translate(modelView, modelView, [0, 0, -5]);
+    mat4.translate(modelView, modelView, [translateX, translateY, -5]);
     mat4.rotateY(modelView, modelView, angleY);
     mat4.rotateX(modelView, modelView, angleX);
 
