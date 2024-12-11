@@ -1,3 +1,5 @@
+
+
 async function loadOBJ(url) {
     const response = await fetch(url);
     if (!response.ok) {
@@ -7,7 +9,7 @@ async function loadOBJ(url) {
     return objText;
 }
 
-function parseOBJ(objText) {
+export function parseOBJ(objText) {
     const vertices = [];
     const normals = [];
     const textures = [];

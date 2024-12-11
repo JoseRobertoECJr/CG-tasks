@@ -1,11 +1,11 @@
 import { init, desenha } from './init.js';
-import { getObj } from './readObj.js';
+import { getObj, parseOBJ } from './readObj.js';
 
-
+let obj;
 
 export async function main() {
 
-    const obj = await getObj('http://192.168.15.154:8080/Trabalho%20Final/teapot.obj');
+    //const obj = await getObj('http://192.168.15.154:8080/Trabalho%20Final/teapot.obj');
 
     const max = Math.max(...obj.vertices);
 
@@ -19,3 +19,31 @@ export async function main() {
 
     desenha();
 }
+
+document.getElementById('formFile').addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    
+    if (!file) {
+        alert("No file selected");
+        return;
+    }
+
+    if (!file.name.endsWith('.obj')) {
+        alert("Please select a .obj file");
+        return;
+    }
+
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+        const content = e.target.result;
+        obj = parseOBJ(content);
+        main();
+    };
+
+    reader.onerror = () => {
+        alert("Error reading file");
+    };
+
+    reader.readAsText(file);
+});
