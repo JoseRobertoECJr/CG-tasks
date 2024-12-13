@@ -16,6 +16,18 @@ let translateY = 0;
 let fov = Math.PI / 4;
 let zoomSpeed = 0.05;
 
+const primitives = {
+    points: gl.POINTS,
+    lines: gl.LINES,
+    lineStrip: gl.LINE_STRIP,
+    lineLoop: gl.LINE_LOOP,
+    triangles: gl.TRIANGLES,
+    triangleStrip: gl.TRIANGLE_STRIP,
+    triangleFan: gl.TRIANGLE_FAN
+}
+
+let primitive = primitives.triangles;
+
 canvas.addEventListener('mousedown', (e) => {
     if (e.button === 1) { // Middle mouse button
         isMiddleMouseDown = true;
@@ -90,6 +102,7 @@ const vertexShaderSource = `
 
     void main() {
         gl_Position = projection * modelView * v;
+        gl_PointSize = 1.0;
     }
 `;
 
@@ -152,7 +165,7 @@ export function desenha() {
     gl.useProgram(shaderProgram);
     setupUniforms();
 
-    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(primitive, indices.length, gl.UNSIGNED_SHORT, 0);
 
     requestAnimationFrame(desenha);
 }
@@ -174,11 +187,12 @@ export function setupUniforms() {
     gl.uniformMatrix4fv(uProjection, false, projection);
 }
 
-export function init(v, inds) {
+export function init(v, inds, prmtv) {
     
     V = v;
     indices = inds;
-    
+    primitive = primitives[prmtv];
+
     initShaders();
 
     initBuffers();
