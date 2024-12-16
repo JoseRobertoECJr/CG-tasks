@@ -12,6 +12,7 @@ let lastMouseY = 0;
 let isMiddleMouseDown = false;
 let translateX = 0;
 let translateY = 0;
+let rgbColor = [0, 0, 1];
 
 let fov = Math.PI / 4;
 let zoomSpeed = 0.05;
@@ -27,6 +28,19 @@ const primitives = {
 }
 
 let primitive = primitives.triangles;
+
+document.getElementById("colorInput").addEventListener("change", function () {
+    const hexColor = this.value;
+    rgbColor = hexToRgb(hexColor);
+});
+
+function hexToRgb(hex) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+
+    return [r/255, g/255, b/255];
+}
 
 canvas.addEventListener('mousedown', (e) => {
     if (e.button === 1) { // Middle mouse button
@@ -100,15 +114,22 @@ const vertexShaderSource = `
     uniform mat4 projection;
     attribute vec4 v;
 
+    uniform vec4 uColor;
+    varying vec4 vColor;
+
     void main() {
         gl_Position = projection * modelView * v;
         gl_PointSize = 1.0;
+        vColor = uColor;
     }
 `;
 
 const fragmentShaderSource = `
+    precision mediump float;
+    varying vec4 vColor;
+    
     void main() {
-        gl_FragColor = vec4(0, 0, 1, 1);
+        gl_FragColor = vColor;
     }
 `;
 
@@ -185,6 +206,9 @@ export function setupUniforms() {
 
     const uProjection = gl.getUniformLocation(shaderProgram, "projection");
     gl.uniformMatrix4fv(uProjection, false, projection);
+
+    const colorLocation = gl.getUniformLocation(shaderProgram, "uColor");
+    gl.uniform4f(colorLocation, rgbColor[0], rgbColor[1], rgbColor[2], 1.0);
 }
 
 export function init(v, inds, prmtv) {
