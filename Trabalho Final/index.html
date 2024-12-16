@@ -11,44 +11,48 @@
     <link href="./libs/bootstrap.min.css" rel="stylesheet">
 </head>
 <body style="background-color: whitesmoke; overflow-y: scroll;">
-    <div class="card" style="margin: 10px;">
-        <div class="card-body">
-          <h5 class="card-title">Visualizador 3D</h5>
-          <h6 class="card-subtitle mb-2 text-muted">Escolha um arquivo obj para visualizar</h6>
-          <canvas id="webglCanvas"></canvas>
-          
-          <div class="input-group">
-            <input class="form-control" type="file" id="formFile">
-            <select class="form-select" id="floatingSelect">
-                <option value="triangles" selected>Triangles</option>
-                <option value="triangleStrip">Triangle Strip</option>
-                <option value="triangleFan">Triangle Fan</option>
-                <option value="points">Points</option>
-                <option value="lines">Lines</option>
-                <option value="lineStrip">Line Strip</option>
-                <option value="lineLoop">LineLoop</option>
-            </select>
-            <input type="color" class="form-control form-control-color" id="colorInput" value="#563d7c" title="Choose your color">
-          </div>
+    <div class="row">
+        <div class="col col-xs-12 col-sm-12 col-md-12 col-lg-6 offset-lg-3">
+            <div class="card" style="margin: 10px;">
+                <div class="card-body">
+                <h5 class="card-title">Visualizador 3D</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Escolha um arquivo obj para visualizar</h6>
+                <canvas id="webglCanvas"></canvas>
+                
+                <div class="input-group">
+                    <input class="form-control" type="file" id="formFile">
+                    <select class="form-select" id="floatingSelect">
+                        <option value="triangles" selected>Triangles</option>
+                        <option value="triangleStrip">Triangle Strip</option>
+                        <option value="triangleFan">Triangle Fan</option>
+                        <option value="points">Points</option>
+                        <option value="lines">Lines</option>
+                        <option value="lineStrip">Line Strip</option>
+                        <option value="lineLoop">Line Loop</option>
+                    </select>
+                    <input type="color" class="form-control form-control-color" id="colorInput" value="#563d7c" title="Choose your color">
+                </div>
 
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item"><br></li>
-            <li class="list-group-item">
-                <img style="height: 32px;" src="./assets/rotation2.png">
-                <img style="height: 32px;" src="./assets/left-click.png">
-                Para rotacionar o modelo, pressione o botão esquerdo do mouse e mova o mouse.
-            </li>
-            <li class="list-group-item">
-                <img style="height: 32px;" src="./assets/move-selection2.png">
-                <img style="height: 32px;" src="./assets/scroll.png">
-                Para movimentar o modelo, pressione o botão scroll do mouse e mova o mouse.
-            </li>
-            <li class="list-group-item">
-                <img style="height: 32px;" src="./assets/loupe3.png">
-                <img style="height: 32px;" src="./assets/scroll.png">
-                Para dar zoom no modelo, mova o botão scroll do mouse para frente e para trás.
-            </li>
-          </ul>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><br></li>
+                    <li class="list-group-item">
+                        <img style="height: 32px;" src="./assets/rotation2.png">
+                        <img style="height: 32px;" src="./assets/left-click.png">
+                        Para rotacionar o modelo, pressione o botão esquerdo do mouse e mova o mouse.
+                    </li>
+                    <li class="list-group-item">
+                        <img style="height: 32px;" src="./assets/move-selection2.png">
+                        <img style="height: 32px;" src="./assets/scroll.png">
+                        Para movimentar o modelo, pressione o botão scroll do mouse e mova o mouse.
+                    </li>
+                    <li class="list-group-item">
+                        <img style="height: 32px;" src="./assets/loupe3.png">
+                        <img style="height: 32px;" src="./assets/scroll.png">
+                        Para dar zoom no modelo, role o botão scroll do mouse para frente e para trás.
+                    </li>
+                </ul>
+                </div>
+            </div>
         </div>
     </div>
 
