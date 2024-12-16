@@ -12,7 +12,7 @@ let lastMouseY = 0;
 let isMiddleMouseDown = false;
 let translateX = 0;
 let translateY = 0;
-let rgbColor = [0, 0, 1];
+let rgbColor = [86/255, 61/255, 124/255];
 
 let fov = Math.PI / 4;
 let zoomSpeed = 0.05;
